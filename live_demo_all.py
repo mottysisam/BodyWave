@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import SquatPosture as sp
+import BodyWave as bw  # Importing the BodyWave module
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -16,15 +17,16 @@ writer_object.writerow(['neck', 'knee', 'hip', 'ankle', 'y-knee'])
 # For video input:
 cap = cv2.VideoCapture(0)
 
-model = tf.keras.models.load_model("working_model_1")
+# Load models for both squats and bodywave
+squat_model = tf.keras.models.load_model("squat_model")
+bodywave_model = tf.keras.models.load_model("bodywave_model")  # Assuming you have a separate model for bodywave
+
 counter_for_renewal = 0
 with mp_pose.Pose() as pose:
     while cap.isOpened():
         success, image = cap.read()
         if not success:
             print("Ignoring empty camera frame.")
-            # If loading a video, use 'break' instead of 'continue'.
-            # continue
             break
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -38,42 +40,20 @@ with mp_pose.Pose() as pose:
         mp_drawing.draw_landmarks(
             image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-        params = sp.get_params(results, all=True)
+        # Extract posture parameters for both squats and bodywave
+        squat_params = sp.get_params(results, all=True)
+        bodywave_params = bw.get_params(results, all=True)
 
-        if params is None:
-            print("NO HUMAN!")
-            continue
+        # Predict posture using the appropriate model
+        squat_output = squat_model.predict(squat_params.T)
+        bodywave_output = bodywave_model.predict(bodywave_params.T)
 
-        flat_params = np.reshape(params, (57, 1))
-
-        #if counter_for_renewal > 100:
-            #csv_file.truncate(1)
-        # writer_object.writerow(flat_params.T.flatten())
-        # csv_file.flush()
-
-        # counter_for_renewal += 1
-        # print(flat_params)
-
-        output = model.predict(flat_params.T)
-
-        # output[0][2] *= 5
-        # output[0][4] *= 3
-
-        output = output * (1 / np.sum(output))
-
-        output_name = ['c', 'k', 'h', 'r', 'x', 'i']
-
-        label = ""
-
-        print(output)
-
-        for i in range(1, 5):
-            label += output_name[i] if output[0][i] > 0.1 else ""
-
-        if label == "":
-            label = "c"
-
-        # print(label, output)
+        # Logic to determine which exercise is being performed and label accordingly
+        # This is a basic example, and you might need more sophisticated logic based on your model's outputs
+        if np.argmax(squat_output) > np.argmax(bodywave_output):
+            label = "Squat"
+        else:
+            label = "BodyWave"
 
         label_final_results(image, label)
 
@@ -81,6 +61,7 @@ with mp_pose.Pose() as pose:
 
         if cv2.waitKey(5) & 0xFF == 27:
             break
+
 csv_file.close()
 cap.release()
 cv2.destroyAllWindows()
