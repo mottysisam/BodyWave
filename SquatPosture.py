@@ -9,6 +9,7 @@ mp_drawing = mp.solutions.drawing_utils
 EXERCISES = [
     'squats',
     'planks',
+    'bodywave'
 ]
 
 def get_angle(v1, v2):
@@ -151,6 +152,22 @@ def get_params(results, exercise='squats', all=False):
         params = np.array([theta_neck, theta_k, theta_h, z, ky])
     elif exercise=='plank':
         params = np.array([theta_s1, theta_s2])
+    elif exercise == 'bodywave':
+        # Angle between chest and hips
+        theta_chest_hips = get_angle(points["MID_SHOULDER"] - points["MID_HIP"], np.array([0, 0, 1]))
+    
+        # Spinal curve - using neck, mid-spine (between shoulders and hips), and hips
+        theta_neck_spine = get_angle(points["NOSE"] - points["MID_SHOULDER"], points["MID_HIP"] - points["MID_SHOULDER"])
+        theta_spine_hips = get_angle(points["MID_SHOULDER"] - points["MID_HIP"], np.array([0, 0, 1]))
+    
+        # Hip movement - forward and backward tilt
+        theta_hip_tilt = get_angle(points["LEFT_HIP"] - points["RIGHT_HIP"], np.array([0, 1, 0]))
+    
+        # Distance between chest and hips
+        distance_chest_hips = get_length(points["MID_SHOULDER"] - points["MID_HIP"])
+    
+        params = np.array([theta_chest_hips, theta_neck_spine, theta_spine_hips, theta_hip_tilt, distance_chest_hips])
+
 
     if all:
         params = np.array([[x, y, z] for pos, (x, y, z) in points.items()]) * length_normalization_factor
