@@ -3,9 +3,10 @@
     src: url(./Biotif-Bold.ttf);
 }
 
+
 * {
     margin: 0;
-    background-color: #013e54;
+    background-color: #0A8247;
 }
 
 body {
@@ -13,7 +14,7 @@ body {
 }
 
 .main {
-    /* background-color: #013e54; */
+    /* background-color: #0A8247; */
     height: auto;
     width: auto;
     align-items: center;

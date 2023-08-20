@@ -47,11 +47,11 @@ def label_params(frame, params, coords):
 
 def label_final_results(image, label):
     expanded_labels = {
-        "c": "Correct Form",
-        "k": "Knee Ahead, push your butt out",
-        "h": "Back Wrongly Positioned, keep your chest up",
-        "r": "Back Wrongly Positioned, keep your chest up",
-        "x": "Correct Depth"
+        "c": "Form Ok",
+        "k": "Knee is not correct, push your butt back!",
+        "h": "Fix your back and keep your chest up",
+        "r": "Keep your chest up!",
+        "x": "Fully Correct"
     }
 
     image_width, image_height, _ = image.shape
@@ -71,7 +71,7 @@ def label_final_results(image, label):
         image, "   "+" + ".join(word for word in described_label),
         (0, 43),
         cv2.FONT_HERSHEY_SIMPLEX,
-        0.6,
+        1.6,
         (255, 255, 255),
         2
     )

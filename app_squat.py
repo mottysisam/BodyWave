@@ -120,12 +120,12 @@ app.layout = html.Div(className="main", children=[
     ),
     dash_dangerously_set_inner_html.DangerouslySetInnerHTML("""
         <div class="main-container">
-            <table cellspacing="20px" class="table">
+            <table cellspacing="30px" class="table">
                 <tr class="row">
-                    <td> <img src="/assets/animation_for_web.gif" class="logo" /> </td>
+                    <td> <img src="/assets/bodywave.png" class="logo" /> </td>
                 </tr>
                 <tr class="choices">
-                    <td> Your personal AI Gym Trainer </td>
+                    <td> BodyWave App </td>
                 </tr>
                 <tr class="row">
                     <td> <img src="/video_feed" class="feed"/> </td>
